@@ -4,7 +4,9 @@ import br.com.murilo.luizalab.dto.request.NoticeRequest;
 import br.com.murilo.luizalab.dto.response.NoticeResponse;
 import br.com.murilo.luizalab.facade.NoticeFacade;
 import br.com.murilo.luizalab.model.Notice;
+import br.com.murilo.luizalab.queue.publisher.MagaluPublisher;
 import br.com.murilo.luizalab.service.NoticeService;
+import br.com.murilo.luizalab.vo.NoticeVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
@@ -19,17 +21,20 @@ public class NoticeFacadeImpl implements NoticeFacade {
 
     private final NoticeService noticeService;
     private final ConversionService conversionService;
+    private final MagaluPublisher magaluPublisher;
 
     @Autowired
-    public NoticeFacadeImpl(final NoticeService noticeService, final ConversionService conversionService) {
+    public NoticeFacadeImpl(final NoticeService noticeService, final ConversionService conversionService, final MagaluPublisher magaluPublisher) {
         this.noticeService = noticeService;
         this.conversionService = conversionService;
+        this.magaluPublisher = magaluPublisher;
     }
 
     @Override
     public NoticeResponse save(final NoticeRequest noticeRequest) {
         final var notice = convertToNotice(noticeRequest);
         final var createdNotice = this.noticeService.save(notice);
+        noticeCanBePublished(createdNotice);
         return convertToNoticeResponse(createdNotice);
     }
 
@@ -65,6 +70,15 @@ public class NoticeFacadeImpl implements NoticeFacade {
 
     private NoticeResponse convertToNoticeResponse(final Notice notice) {
         return this.conversionService.convert(notice, NoticeResponse.class);
+    }
+
+    private void noticeCanBePublished(final Notice notice) {
+        final var now = LocalDateTime.now();
+        final var sendDate = notice.getSendDate();
+        if(sendDate.isAfter(now) && sendDate.isBefore(now.plusHours(1))) {
+            final var noticeVO = this.conversionService.convert(notice, NoticeVO.class);
+            magaluPublisher.publishNotice(noticeVO);
+        }
     }
 
 }

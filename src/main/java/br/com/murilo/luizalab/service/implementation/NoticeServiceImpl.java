@@ -1,6 +1,7 @@
 package br.com.murilo.luizalab.service.implementation;
 
 import br.com.murilo.luizalab.model.Notice;
+import br.com.murilo.luizalab.queue.publisher.MagaluPublisher;
 import br.com.murilo.luizalab.repository.NoticeRepository;
 import br.com.murilo.luizalab.service.NoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -16,18 +16,18 @@ import java.util.UUID;
 public class NoticeServiceImpl implements NoticeService {
 
     private final NoticeRepository noticeRepository;
+    private final MagaluPublisher magaluPublisher;
 
     @Autowired
-    public NoticeServiceImpl(final NoticeRepository noticeRepository) {
+    public NoticeServiceImpl(final NoticeRepository noticeRepository, final MagaluPublisher magaluPublisher) {
         this.noticeRepository = noticeRepository;
+        this.magaluPublisher = magaluPublisher;
     }
 
     @Override
     public Notice save(final Notice notice) {
         if(isValidDate(notice.getSendDate())) {
-            final var savedNotice = this.noticeRepository.save(notice);
-            canBePublished(savedNotice);
-            return savedNotice;
+            return this.noticeRepository.save(notice);
         }
         throw new RuntimeException("A data precisa ser maior que agora");
     }
@@ -47,9 +47,7 @@ public class NoticeServiceImpl implements NoticeService {
         if(isValidDate(notice.getSendDate())){
             if(noticeExists(id)) {
                 notice.setId(id);
-                final var updatedNotice = this.noticeRepository.save(notice);
-                canBePublished(updatedNotice);
-                return updatedNotice;
+                return this.noticeRepository.save(notice);
             }
             throw new RuntimeException("Mensagem não encontrada!");
         }
@@ -72,13 +70,5 @@ public class NoticeServiceImpl implements NoticeService {
     private boolean isValidDate(final LocalDateTime sendDate) {
         final var now = LocalDateTime.now();
         return sendDate.isAfter(now);
-    }
-
-    private void canBePublished(final Notice notice) {
-        final var now = LocalDateTime.now();
-        final var sendDate = notice.getSendDate();
-        if(sendDate.isAfter(now) && sendDate.isBefore(now.plusHours(1))) {
-            //TODO publish notice
-        }
     }
 }
