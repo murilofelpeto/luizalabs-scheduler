@@ -6,7 +6,7 @@ import br.com.murilo.luizalab.facade.NoticeFacade;
 import br.com.murilo.luizalab.model.Notice;
 import br.com.murilo.luizalab.queue.publisher.MagaluPublisher;
 import br.com.murilo.luizalab.service.NoticeService;
-import br.com.murilo.luizalab.vo.NoticeVO;
+import br.com.murilo.luizalab.dto.publisher.NoticePublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
@@ -56,6 +56,7 @@ public class NoticeFacadeImpl implements NoticeFacade {
     public NoticeResponse update(final UUID id, final NoticeRequest noticeRequest) {
         final var notice = convertToNotice(noticeRequest);
         final var updatedNotice = this.noticeService.update(id, notice);
+        noticeCanBePublished(updatedNotice);
         return convertToNoticeResponse(updatedNotice);
     }
 
@@ -76,7 +77,7 @@ public class NoticeFacadeImpl implements NoticeFacade {
         final var now = LocalDateTime.now();
         final var sendDate = notice.getSendDate();
         if(sendDate.isAfter(now) && sendDate.isBefore(now.plusHours(1))) {
-            final var noticeVO = this.conversionService.convert(notice, NoticeVO.class);
+            final var noticeVO = this.conversionService.convert(notice, NoticePublisher.class);
             magaluPublisher.publishNotice(noticeVO);
         }
     }

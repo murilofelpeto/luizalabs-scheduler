@@ -1,4 +1,4 @@
-package br.com.murilo.luizalab.vo;
+package br.com.murilo.luizalab.dto.publisher;
 
 import br.com.murilo.luizalab.types.MessageStatus;
 import br.com.murilo.luizalab.types.MessageType;
@@ -15,7 +15,7 @@ import java.util.UUID;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class NoticeVO {
+public class NoticePublisher {
 
     private UUID id;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

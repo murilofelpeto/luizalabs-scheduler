@@ -1,7 +1,7 @@
 package br.com.murilo.luizalab.queue.publisher.implementation;
 
 import br.com.murilo.luizalab.queue.publisher.MagaluPublisher;
-import br.com.murilo.luizalab.vo.NoticeVO;
+import br.com.murilo.luizalab.dto.publisher.NoticePublisher;
 import com.tradeshift.amqp.rabbit.handlers.RabbitTemplateHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +26,9 @@ public class MagaluPublisherImpl implements MagaluPublisher {
     }
 
     @Override
-    public void publishNotice(final NoticeVO noticeVO) {
-        log.info("Publishing message with id: {}", noticeVO.getId());
-        magaluTemplateHandler.getRabbitTemplate("luizalab-sender").convertAndSend(exchangeLuizaLabSender, routingKeyLuizaLabSender, noticeVO);
-        log.info("Published successfully message with id: {}", noticeVO.getId());
+    public void publishNotice(final NoticePublisher noticePublisher) {
+        log.info("Publishing message with id: {}", noticePublisher.getId());
+        magaluTemplateHandler.getRabbitTemplate("luizalab-sender").convertAndSend(exchangeLuizaLabSender, routingKeyLuizaLabSender, noticePublisher);
+        log.info("Published successfully message with id: {}", noticePublisher.getId());
     }
 }
