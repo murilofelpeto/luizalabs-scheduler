@@ -4,5 +4,5 @@ import org.springframework.amqp.core.Message;
 
 public interface MagaluListener {
 
-    void process(Message message);
+    void onMessage(Message message);
 }

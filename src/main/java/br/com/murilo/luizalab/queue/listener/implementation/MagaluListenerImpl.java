@@ -1,11 +1,10 @@
 package br.com.murilo.luizalab.queue.listener.implementation;
 
+import static br.com.murilo.luizalab.configuration.RabbitMQListenerConfiguration.QUEUE_LISTENER;
 import br.com.murilo.luizalab.dto.listener.NoticeListener;
 import br.com.murilo.luizalab.queue.listener.MagaluListener;
-import br.com.murilo.luizalab.service.NoticeService;
+import br.com.murilo.luizalab.repository.NoticeRepository;
 import br.com.murilo.luizalab.utils.JsonConverter;
-import br.com.murilo.luizalab.dto.publisher.NoticePublisher;
-import com.tradeshift.amqp.annotation.EnableRabbitRetryAndDlq;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -18,24 +17,24 @@ import java.nio.charset.Charset;
 @Slf4j
 public class MagaluListenerImpl implements MagaluListener {
 
-    private final NoticeService noticeService;
+    private final NoticeRepository noticeRepository;
 
     @Autowired
-    public MagaluListenerImpl(final NoticeService noticeService) {
-        this.noticeService = noticeService;
+    public MagaluListenerImpl(final NoticeRepository noticeRepository) {
+        this.noticeRepository = noticeRepository;
     }
 
-    @RabbitListener(containerFactory = "luizalab-listener", queues = "${spring.rabbitmq.custom.luizalab-listener.queue}")
-    @EnableRabbitRetryAndDlq(event = "luizalab-listener")
+    @RabbitListener(queues = QUEUE_LISTENER)
     @Override
-    public void process(final Message message) {
+    public void onMessage(final Message message) {
         log.info("Retrieving message");
         final String messageStr = new String(message.getBody(), Charset.defaultCharset());
-        final var noticeListener = (NoticeListener)JsonConverter.convert(messageStr, NoticeListener.class);
+        final var noticeListener = (NoticeListener) JsonConverter.convert(messageStr, NoticeListener.class);
 
-        final var notice = this.noticeService.findById(noticeListener.getId());
+        final var notice = this.noticeRepository.findById(noticeListener.getId()).orElseThrow(() -> new RuntimeException("Mensagem não encontrada"));
         notice.setStatus(noticeListener.getStatus());
-        this.noticeService.update(notice.getId(), notice);
+        notice.setId((noticeListener.getId()));
+        this.noticeRepository.save(notice);
         log.info("Message with id: {} updated status to -> {}", notice.getId(), notice.getStatus());
     }
 }

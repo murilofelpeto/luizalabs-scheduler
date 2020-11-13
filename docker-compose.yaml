@@ -10,6 +10,13 @@ services:
       - database-data:/var/lib/postgresql/data/
     networks:
       - scheduler-network
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - scheduler-network
   api:
     image: murilofelpeto/scheduler-api
     build: ./
@@ -17,8 +24,10 @@ services:
       - "8080:8080"
     links:
       - db
+      - rabbitmq
     depends_on:
       - db
+      - rabbitmq
     networks:
       - scheduler-network
 networks:
