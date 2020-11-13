@@ -1,7 +1,6 @@
 package br.com.murilo.luizalab.service.implementation;
 
 import br.com.murilo.luizalab.model.Notice;
-import br.com.murilo.luizalab.queue.publisher.MagaluPublisher;
 import br.com.murilo.luizalab.repository.NoticeRepository;
 import br.com.murilo.luizalab.service.NoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,18 +9,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 
 @Service
 public class NoticeServiceImpl implements NoticeService {
 
     private final NoticeRepository noticeRepository;
-    private final MagaluPublisher magaluPublisher;
 
     @Autowired
-    public NoticeServiceImpl(final NoticeRepository noticeRepository, final MagaluPublisher magaluPublisher) {
+    public NoticeServiceImpl(final NoticeRepository noticeRepository) {
         this.noticeRepository = noticeRepository;
-        this.magaluPublisher = magaluPublisher;
     }
 
     @Override
@@ -68,7 +66,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     private boolean isValidDate(final LocalDateTime sendDate) {
-        final var now = LocalDateTime.now();
+        final var now = LocalDateTime.now(ZoneId.of("America/Sao_Paulo"));
         return sendDate.isAfter(now);
     }
 }

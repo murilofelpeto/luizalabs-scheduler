@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 
 @Component
@@ -74,9 +75,9 @@ public class NoticeFacadeImpl implements NoticeFacade {
     }
 
     private void noticeCanBePublished(final Notice notice) {
-        final var now = LocalDateTime.now();
+        final var now = LocalDateTime.now(ZoneId.of("America/Sao_Paulo"));
         final var sendDate = notice.getSendDate();
-        if(sendDate.isAfter(now) && sendDate.isBefore(now.plusHours(1))) {
+        if(sendDate.isAfter(now) && sendDate.isBefore(now.plusMinutes(1))) {
             final var noticeVO = this.conversionService.convert(notice, NoticePublisher.class);
             magaluPublisher.publishNotice(noticeVO);
         }
