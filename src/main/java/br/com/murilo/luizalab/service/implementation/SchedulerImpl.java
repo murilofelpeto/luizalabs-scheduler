@@ -36,6 +36,6 @@ public class SchedulerImpl implements Scheduler {
         final var now = LocalDateTime.now(ZoneId.of("America/Sao_Paulo"));
         final var notices = this.noticeRepository.findNoticeBySendDateBetweenAndStatus(now, now.plusMinutes(1), MessageStatus.SCHEDULED);
         final var noticesPublisher = notices.stream().map(notice -> this.conversionService.convert(notice, NoticePublisher.class)).collect(Collectors.toList());
-        noticesPublisher.forEach(noticePublisher -> this.magaluPublisher.publishNotice(noticePublisher));
+        noticesPublisher.forEach(this.magaluPublisher::publishNotice);
     }
 }

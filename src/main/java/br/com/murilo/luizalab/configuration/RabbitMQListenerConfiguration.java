@@ -43,6 +43,6 @@ public class RabbitMQListenerConfiguration {
 
     @Bean(name = "bindingListener")
     public Binding declareBindingListener(Queue queueListener, Exchange exchangeListener) {
-        return BindingBuilder.bind(queueListener).to(exchangeListener).with(ROUTING_KEY_SENDER).noargs();
+        return BindingBuilder.bind(queueListener).to(exchangeListener).with(ROUTING_KEY_LISTENER).noargs();
     }
 }

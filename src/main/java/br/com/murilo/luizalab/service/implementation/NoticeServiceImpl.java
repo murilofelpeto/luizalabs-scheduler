@@ -58,7 +58,7 @@ public class NoticeServiceImpl implements NoticeService {
             this.noticeRepository.deleteById(id);
             return;
         }
-        throw new RuntimeException("Mensagem não encontrada");
+        throw new RuntimeException("Mensagem não encontrada!");
     }
 
     private boolean noticeExists(final UUID id) {

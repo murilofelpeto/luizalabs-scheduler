@@ -7,7 +7,7 @@ public enum MessageType {
     PUSH("push"),
     WHATSAPP("whatsapp");
 
-    private String messageType;
+    private final String messageType;
 
     MessageType(final String messageType) {
         this.messageType = messageType;

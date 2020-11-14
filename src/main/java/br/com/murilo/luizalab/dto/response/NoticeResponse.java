@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @AllArgsConstructor(staticName = "of")
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @ToString
 public class NoticeResponse extends RepresentationModel<NoticeResponse> {
 

@@ -8,7 +8,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@AllArgsConstructor
+@AllArgsConstructor(staticName = "of")
 @Getter
 @Setter
 @EqualsAndHashCode
