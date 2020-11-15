@@ -33,7 +33,7 @@ public class SchedulerImpl implements Scheduler {
     @Scheduled(zone = "GMT-3:00", fixedRate = 60000)
     @Override
     public void publishMessage() {
-        final var now = LocalDateTime.now(ZoneId.of("America/Sao_Paulo"));
+        final var now = LocalDateTime.now(ZoneId.of("America/Sao_Paulo")).withSecond(0);
         final var notices = this.noticeRepository.findNoticeBySendDateBetweenAndStatus(now, now.plusMinutes(1), MessageStatus.SCHEDULED);
         final var noticesPublisher = notices.stream().map(notice -> this.conversionService.convert(notice, NoticePublisher.class)).collect(Collectors.toList());
         noticesPublisher.forEach(this.magaluPublisher::publishNotice);

@@ -66,7 +66,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     private boolean isValidDate(final LocalDateTime sendDate) {
-        final var now = LocalDateTime.now(ZoneId.of("America/Sao_Paulo"));
+        final var now = LocalDateTime.now(ZoneId.of("America/Sao_Paulo")).withSecond(0);
         return sendDate.isAfter(now);
     }
 }
