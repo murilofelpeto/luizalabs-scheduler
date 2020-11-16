@@ -1,5 +1,7 @@
 package br.com.murilo.luizalab.service.implementation;
 
+import br.com.murilo.luizalab.exception.InvalidDateException;
+import br.com.murilo.luizalab.exception.ResourceNotFoundException;
 import br.com.murilo.luizalab.model.Notice;
 import br.com.murilo.luizalab.repository.NoticeRepository;
 import br.com.murilo.luizalab.service.NoticeService;
@@ -15,6 +17,9 @@ import java.util.UUID;
 @Service
 public class NoticeServiceImpl implements NoticeService {
 
+    private static final String INVALID_DATE_MESSAGE = "A data precisa ser maior que agora";
+    private static final String MESSAGE_NOT_FOUND = "Mensagem não encontrada";
+
     private final NoticeRepository noticeRepository;
 
     @Autowired
@@ -27,12 +32,12 @@ public class NoticeServiceImpl implements NoticeService {
         if(isValidDate(notice.getSendDate())) {
             return this.noticeRepository.save(notice);
         }
-        throw new RuntimeException("A data precisa ser maior que agora");
+        throw new InvalidDateException(INVALID_DATE_MESSAGE);
     }
 
     @Override
     public Notice findById(final UUID id) {
-        return this.noticeRepository.findById(id).orElseThrow(() -> new RuntimeException("Mensagem não encontrada"));
+        return this.noticeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(MESSAGE_NOT_FOUND));
     }
 
     @Override
@@ -47,9 +52,9 @@ public class NoticeServiceImpl implements NoticeService {
                 notice.setId(id);
                 return this.noticeRepository.save(notice);
             }
-            throw new RuntimeException("Mensagem não encontrada!");
+            throw new ResourceNotFoundException(MESSAGE_NOT_FOUND);
         }
-        throw new RuntimeException("A data precisa ser maior que agora");
+        throw new InvalidDateException(INVALID_DATE_MESSAGE);
     }
 
     @Override
@@ -58,7 +63,7 @@ public class NoticeServiceImpl implements NoticeService {
             this.noticeRepository.deleteById(id);
             return;
         }
-        throw new RuntimeException("Mensagem não encontrada!");
+        throw new ResourceNotFoundException(MESSAGE_NOT_FOUND);
     }
 
     private boolean noticeExists(final UUID id) {

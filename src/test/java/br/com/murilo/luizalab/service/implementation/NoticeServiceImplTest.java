@@ -1,5 +1,6 @@
 package br.com.murilo.luizalab.service.implementation;
 
+import br.com.murilo.luizalab.exception.ResourceNotFoundException;
 import br.com.murilo.luizalab.model.Notice;
 import br.com.murilo.luizalab.repository.NoticeRepository;
 import br.com.murilo.luizalab.service.NoticeService;
@@ -123,11 +124,11 @@ class NoticeServiceImplTest {
     void should_not_update_notice_because_of_id_not_found() {
         final var id = UUID.randomUUID();
         final var invalidNotice = createNotice(id);
-        final var exception = assertThrows(RuntimeException.class, () -> {
+        final var exception = assertThrows(ResourceNotFoundException.class, () -> {
             noticeService.update(id, invalidNotice);
         });
 
-        assertThat(exception.getMessage(), equalTo("Mensagem não encontrada!"));
+        assertThat(exception.getMessage(), equalTo("Mensagem não encontrada"));
     }
 
     @Test
@@ -144,11 +145,11 @@ class NoticeServiceImplTest {
     @Test
     void should_not_delete_notice_because_of_id_not_found() {
         final var id = UUID.randomUUID();
-        final var exception = assertThrows(RuntimeException.class, () -> {
+        final var exception = assertThrows(ResourceNotFoundException.class, () -> {
             noticeService.delete(id);
         });
 
-        assertThat(exception.getMessage(), equalTo("Mensagem não encontrada!"));
+        assertThat(exception.getMessage(), equalTo("Mensagem não encontrada"));
     }
 
     private Notice createNotice(final UUID id) {
