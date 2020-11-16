@@ -1,6 +1,7 @@
 package br.com.murilo.luizalab.service.implementation;
 
 import br.com.murilo.luizalab.dto.publisher.NoticePublisher;
+import br.com.murilo.luizalab.model.Notice;
 import br.com.murilo.luizalab.queue.publisher.MagaluPublisher;
 import br.com.murilo.luizalab.repository.NoticeRepository;
 import br.com.murilo.luizalab.service.Scheduler;
@@ -37,5 +38,12 @@ public class SchedulerImpl implements Scheduler {
         final var notices = this.noticeRepository.findNoticeBySendDateBetweenAndStatus(now, now.plusMinutes(1), MessageStatus.SCHEDULED);
         final var noticesPublisher = notices.stream().map(notice -> this.conversionService.convert(notice, NoticePublisher.class)).collect(Collectors.toList());
         noticesPublisher.forEach(this.magaluPublisher::publishNotice);
+        notices.stream().map(this::updateStatus).collect(Collectors.toList());
+        this.noticeRepository.saveAll(notices);
+    }
+
+    private Notice updateStatus(final Notice notice) {
+        notice.setStatus(MessageStatus.SENDING);
+        return notice;
     }
 }
