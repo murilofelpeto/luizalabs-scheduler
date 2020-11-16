@@ -1,0 +1,46 @@
+{
+	"info": {
+		"_postman_id": "30facb4b-80a7-4859-a60f-c835412350cd",
+		"name": "Swagger documentation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Swagger UI",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/swagger-ui/",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"swagger-ui",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Swagger docs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/v3/api-docs",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"v3",
+						"api-docs"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
