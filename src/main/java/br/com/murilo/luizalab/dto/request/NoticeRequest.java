@@ -16,7 +16,7 @@ import java.util.UUID;
 public class NoticeRequest {
 
     private UUID id;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime sendDate;
     private Integer senderId;
     private Integer recipientId;
